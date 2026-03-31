@@ -1,0 +1,25 @@
+{
+  "name": "tamar-solu-plugins",
+  "owner": {
+    "name": "Tamar",
+    "github": "tamar-solu"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for developer productivity."
+  },
+  "plugins": [
+    {
+      "name": "repo-to-notebooklm",
+      "source": "./plugins/repo-to-notebooklm",
+      "description": "Converts a code repository into a single readable document that can be uploaded to NotebookLM for AI-powered podcast generation and Q&A.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Tamar",
+        "github": "tamar-solu"
+      },
+      "license": "MIT",
+      "category": "productivity",
+      "tags": ["notebooklm", "documentation", "podcast", "export", "repo"]
+    }
+  ]
+}
