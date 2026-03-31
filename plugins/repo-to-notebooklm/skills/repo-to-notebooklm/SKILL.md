@@ -1,17 +1,19 @@
 ---
 name: repo-to-notebooklm
-description: Converts a code repository into a single readable document that can be uploaded to NotebookLM for AI-powered podcast generation and Q&A.
+description: Converts a code repository into a single readable document and optionally uploads it to a new NotebookLM notebook automatically.
 ---
 
 # Repo to NotebookLM
 
-Convert this repository into a single, well-structured text document suitable for uploading to NotebookLM.
+Convert this repository into a single, well-structured text document and upload it to NotebookLM.
 
 ## Goal
 
-NotebookLM cannot open code files directly. This skill compiles the entire repository — structure, documentation, and source code — into one `.txt` file that NotebookLM can ingest, understand, and use to generate podcasts or answer questions.
+NotebookLM cannot open code files directly. This skill compiles the entire repository — structure, documentation, and source code — into one `.txt` file, then automatically creates a new NotebookLM notebook and uploads it. If the notebooklm CLI is not installed, it falls back to generating the file and prompting manual upload.
 
 ## Instructions
+
+### Step 1 — Generate the export file
 
 1. **Determine output path**: Save the output file as `notebooklm_export.txt` in the repository root unless the user specified a different path.
 
@@ -78,14 +80,66 @@ For each file, use this format:
 
 7. **Write the file** using the Write tool.
 
-8. **Report to the user**:
-   - The output file path
-   - How many files were included vs skipped
-   - Total character count (rough size)
-   - Remind them: "Upload `notebooklm_export.txt` to NotebookLM at notebooklm.google.com — click Add Source → Upload file."
+---
+
+### Step 2 — Auto-upload to NotebookLM
+
+After writing the file, run the following check:
+
+```bash
+which notebooklm 2>/dev/null
+```
+
+**If `notebooklm` is NOT installed:**
+- Tell the user the file was generated successfully
+- Show install instructions:
+  ```
+  pip install "notebooklm-py[browser]"
+  playwright install chromium
+  notebooklm login
+  ```
+- Tell them to upload manually: go to notebooklm.google.com → Add Source → Upload file
+- Stop here.
+
+**If `notebooklm` IS installed**, check login status:
+
+```bash
+notebooklm auth check --test 2>&1
+```
+
+**If NOT logged in** (non-zero exit or output contains "not authenticated" / "login"):
+- Tell the user to run `notebooklm login` first, then re-run this skill
+- Stop here.
+
+**If logged in**, proceed with upload:
+
+1. Determine the notebook name: use the project name from Step 1 (e.g. `cv-processing-system`)
+
+2. Create a new notebook:
+```bash
+notebooklm create "<project-name>"
+```
+
+3. Set it as the active notebook using the ID returned from the create command:
+```bash
+notebooklm use <notebook-id>
+```
+
+4. Upload the export file:
+```bash
+notebooklm source add "./notebooklm_export.txt"
+```
+
+5. Report to the user:
+   - The notebook name that was created
+   - Confirmation that the file was uploaded
+   - Tell them to go to notebooklm.google.com to find the notebook and generate a podcast
+
+---
 
 ## Guidance
 - Keep the document human-readable; NotebookLM works best with flowing text interspersed with code.
 - Do not truncate README or documentation files — they are the most valuable for podcast generation.
 - If the repo has a `docs/` folder, prioritize those files early in the SOURCE FILES section.
 - The final summary section is crucial — write it as if explaining to a smart non-engineer what this project does.
+- If any upload step fails, report the error clearly and tell the user they can still upload `notebooklm_export.txt` manually.
