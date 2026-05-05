@@ -20,6 +20,19 @@
       "license": "MIT",
       "category": "productivity",
       "tags": ["notebooklm", "documentation", "podcast", "export", "repo"]
+    },
+    {
+      "name": "repo-setup",
+      "source": "./plugins/repo-setup",
+      "description": "Bootstrap a freshly cloned repository: read docs, detect the stack, install dependencies, configure environment, auto-generate non-secret values, and verify the project runs.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Tamar",
+        "github": "tamar-solu"
+      },
+      "license": "MIT",
+      "category": "productivity",
+      "tags": ["setup", "bootstrap", "onboarding", "scaffolding", "repo"]
     }
   ]
 }

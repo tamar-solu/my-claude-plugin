@@ -1,0 +1,5 @@
+{
+  "name": "repo-setup",
+  "description": "Bootstrap a freshly cloned repository: read docs, detect the stack, install dependencies, configure environment, auto-generate non-secret values, and verify the project runs.",
+  "version": "1.0.0"
+}
