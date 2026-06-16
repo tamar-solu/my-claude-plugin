@@ -33,6 +33,19 @@
       "license": "MIT",
       "category": "productivity",
       "tags": ["setup", "bootstrap", "onboarding", "scaffolding", "repo"]
+    },
+    {
+      "name": "eli5",
+      "source": "./plugins/eli5",
+      "description": "Re-explain Claude's most recent message or explanation in the simplest possible terms, as if explaining to a 5-year-old.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Tamar",
+        "github": "tamar-solu"
+      },
+      "license": "MIT",
+      "category": "productivity",
+      "tags": ["explain", "eli5", "simplify", "learning", "teaching"]
     }
   ]
 }

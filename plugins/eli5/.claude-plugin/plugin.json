@@ -1,0 +1,5 @@
+{
+  "name": "eli5",
+  "description": "Re-explain Claude's most recent message or explanation in the simplest possible terms, as if explaining to a 5-year-old.",
+  "version": "1.0.0"
+}
