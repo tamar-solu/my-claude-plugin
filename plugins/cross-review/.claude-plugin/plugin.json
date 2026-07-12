@@ -1,0 +1,5 @@
+{
+  "name": "cross-review",
+  "description": "Cross-model code review: runs an independent review with a different model, then independently validates every finding before surfacing it.",
+  "version": "1.0.0"
+}
