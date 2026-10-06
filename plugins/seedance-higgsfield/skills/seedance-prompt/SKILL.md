@@ -1,6 +1,6 @@
 ---
 name: "seedance-prompt"
-description: "Turn a rough video idea (Hebrew or English) into a complete, structured Seedance 2.5 prompt ready to paste into Higgsfield."
+description: "Turn a rough video idea (Hebrew or English) into a complete, structured Seedance 2.5 prompt, and optionally generate it on Higgsfield through the bundled Higgsfield MCP server after a cost check and user approval."
 ---
 
 # Seedance 2.5 Prompt Builder
@@ -78,3 +78,16 @@ Return exactly this, nothing more:
 **Notes:** 1-3 bullets max: the riskiest part of this prompt and what to tweak first if the result is off.
 
 Do not offer multiple prompt variants unless asked. If the user asks for iteration after a generation, ask what went wrong (or read their description) and change only the section responsible.
+
+## Generating on Higgsfield (only when the user asks)
+
+This plugin bundles the Higgsfield MCP server (`plugin:seedance-higgsfield:higgsfield`). Writing the prompt never triggers a generation. Credits are real money, so follow these steps in order:
+
+1. **Check the connection.** If the Higgsfield tools are missing or the server shows `needs-auth`, do not try the OAuth flow in `/mcp`: it currently fails with a `code_challenge` error. Tell the user to run `higgsfield auth login` in the CLI and reconnect from `/mcp`. If it still shows `needs-auth`, remove the `plugin:seedance-higgsfield:higgsfield` entry from `~/.claude/mcp-needs-auth-cache.json`, then reconnect.
+2. **Preflight the cost.** Call `balance`, then `generate_video` with `get_cost: true`, using `model: "seedance_2_5"`, the full prompt from the code block, and the `duration` and `aspect_ratio` from Settings. Show the user the cost and their balance, and wait for an explicit yes.
+3. **Default to a 5s test** for a new prompt, even if the final clip is longer. Price the full length separately once the test looks right.
+4. **Generate** with the same params minus `get_cost`. Leave `use_unlim` unset; if the response returns `unlim_choice`, ask the user which balance to use and call again with their answer.
+5. **Plan blocks.** Seedance may be gated by plan. A block is reported before any charge. If blocked, say so and offer `kling3_0_turbo` as a cheaper fallback (price it first), noting that the prompt was written for Seedance and may be followed more loosely.
+6. **Never resubmit on a timeout.** The job may already be running. Use the returned job ID with `jobs_wait` or `show_generation_by_ids`.
+7. **References.** If the prompt uses `@Image`/`@Video`/`@Audio`, upload the media first (`media_upload`, or `media_import_url` for web links) and pass the returned IDs in `medias` with the roles the model declares (check with `models_explore` `action: "get"`). Never pass raw URLs in `medias`.
+
