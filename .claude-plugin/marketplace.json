@@ -19,7 +19,13 @@
       },
       "license": "MIT",
       "category": "productivity",
-      "tags": ["notebooklm", "documentation", "podcast", "export", "repo"]
+      "tags": [
+        "notebooklm",
+        "documentation",
+        "podcast",
+        "export",
+        "repo"
+      ]
     },
     {
       "name": "repo-setup",
@@ -32,7 +38,13 @@
       },
       "license": "MIT",
       "category": "productivity",
-      "tags": ["setup", "bootstrap", "onboarding", "scaffolding", "repo"]
+      "tags": [
+        "setup",
+        "bootstrap",
+        "onboarding",
+        "scaffolding",
+        "repo"
+      ]
     },
     {
       "name": "eli5",
@@ -45,7 +57,13 @@
       },
       "license": "MIT",
       "category": "productivity",
-      "tags": ["explain", "eli5", "simplify", "learning", "teaching"]
+      "tags": [
+        "explain",
+        "eli5",
+        "simplify",
+        "learning",
+        "teaching"
+      ]
     },
     {
       "name": "cross-review",
@@ -58,7 +76,31 @@
       },
       "license": "MIT",
       "category": "productivity",
-      "tags": ["code-review", "cross-model", "validation", "quality"]
+      "tags": [
+        "code-review",
+        "cross-model",
+        "validation",
+        "quality"
+      ]
+    },
+    {
+      "name": "seedance-higgsfield",
+      "source": "./plugins/seedance-higgsfield",
+      "description": "Turn rough video ideas into structured Seedance 2.5 prompts, and generate them through the Higgsfield MCP server.",
+      "version": "1.0.1",
+      "author": {
+        "name": "Tamar",
+        "github": "tamar-solu"
+      },
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "seedance",
+        "higgsfield",
+        "video",
+        "prompt",
+        "mcp"
+      ]
     }
   ]
 }

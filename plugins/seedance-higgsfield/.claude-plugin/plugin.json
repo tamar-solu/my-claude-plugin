@@ -1,0 +1,10 @@
+{
+  "name": "seedance-higgsfield",
+  "description": "Turn rough video ideas into structured Seedance 2.5 prompts, and generate them through the Higgsfield MCP server.",
+  "version": "1.0.1",
+  "author": {
+    "name": "Tamar",
+    "github": "tamar-solu"
+  },
+  "license": "MIT"
+}
