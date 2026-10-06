@@ -23,11 +23,11 @@ The MCP server authenticates with your CLI token via `scripts/higgsfield-headers
 ## Usage
 
 - `/seedance-higgsfield:seedance-prompt <your idea>`, or just describe a video idea and ask for a Seedance prompt.
-- Then ask Claude to generate it. It checks your balance and the cost first, and waits for your OK.
+- Then ask Claude to generate it. It shows one confirmation with the exact prompt, model, settings, cost and balance, and generates only after you say yes. Any change to the prompt or settings needs a new yes.
 
 ## Notes
 
-- Generations spend Higgsfield credits. The skill always checks the cost and asks before generating, and starts with a 5s test.
+- Generations spend Higgsfield credits. The skill never writes and generates in the same turn, requires approval of the exact prompt and cost, and starts with a 5s test.
 - Seedance may be gated by plan. Higgsfield reports a block before charging, and the skill offers `kling3_0_turbo` as a cheaper fallback.
 - The headers helper finds the CLI even when it is not on Claude Code's PATH (nvm, npm-global, Homebrew), and falls back to reading `~/.config/higgsfield/credentials.json` if the token has not expired.
 

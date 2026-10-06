@@ -1,6 +1,6 @@
 ---
 name: "seedance-prompt"
-description: "Turn a rough video idea (Hebrew or English) into a complete, structured Seedance 2.5 prompt, and optionally generate it on Higgsfield through the bundled Higgsfield MCP server after a cost check and user approval."
+description: "Turn a rough video idea (Hebrew or English) into a structured Seedance 2.5 prompt, and generate videos on Higgsfield with an approval gate. MUST be used for ANY request to make, create or generate a video with Higgsfield or Seedance (MCP generate_video or the higgsfield CLI), even a one-line request like 'make me a video of X', before calling any Higgsfield generation tool or command."
 ---
 
 # Seedance 2.5 Prompt Builder
@@ -81,13 +81,28 @@ Do not offer multiple prompt variants unless asked. If the user asks for iterati
 
 ## Generating on Higgsfield (only when the user asks)
 
-This plugin bundles the Higgsfield MCP server (`plugin:seedance-higgsfield:higgsfield`). Writing the prompt never triggers a generation. Credits are real money, so follow these steps in order:
+This plugin bundles the Higgsfield MCP server (`plugin:seedance-higgsfield:higgsfield`). Credits are real money, so the user must approve the exact prompt and settings before anything is generated.
+
+### Approval gate (never skip)
+
+- **Never write and generate in the same turn.** Even if the user asked for a video in one message ("make me a video of X"), first return the prompt in the normal output format and stop. Generation starts only in a later turn, after the user has seen the final prompt.
+- **One confirmation message, then wait.** Before any non-`get_cost` `generate_video` call, send a single message containing all of the following, and wait for an explicit yes to it:
+  - the exact final prompt, in full, in a code block (the text that will be sent, not a summary);
+  - model, duration, aspect ratio, count, and any reference media with their roles;
+  - the cost from the `get_cost` preflight, and the current balance.
+- **What counts as approval:** a clear yes in reply to that confirmation message ("yes", "go", "generate it", "כן"). A request to generate made before the confirmation was shown, or approval of an earlier version, does not count.
+- **Any change resets approval.** If the prompt text, model, duration, aspect ratio, count or references change after the confirmation (an edit, an iteration after a test, a plan-block fallback, a parameter adjusted by the server), show a new confirmation with the new values and cost, and wait again. Never silently fix or rewrite the prompt between approval and submission.
+- **Same gate for the CLI.** These rules apply equally to `higgsfield generate create` (price it with `higgsfield generate cost` first). Prefer the MCP tools when they are connected.
+- **No conditional approval.** Never ask for or act on approval of a branch ("switch to Kling if Seedance is blocked", "retry if it fails"). Each alternative gets its own confirmation when it actually happens.
+- **One approval, one submission.** Approval covers exactly one `generate_video` call. A second clip, a retry or the full-length version after a test each need their own confirmation.
+
+### Steps
 
 1. **Check the connection.** If the Higgsfield tools are missing or the server shows `needs-auth`, do not try the OAuth flow in `/mcp`: it currently fails with a `code_challenge` error. Tell the user to run `higgsfield auth login` in the CLI and reconnect from `/mcp`. If it still shows `needs-auth`, remove the `plugin:seedance-higgsfield:higgsfield` entry from `~/.claude/mcp-needs-auth-cache.json`, then reconnect.
-2. **Preflight the cost.** Call `balance`, then `generate_video` with `get_cost: true`, using `model: "seedance_2_5"`, the full prompt from the code block, and the `duration` and `aspect_ratio` from Settings. Show the user the cost and their balance, and wait for an explicit yes.
-3. **Default to a 5s test** for a new prompt, even if the final clip is longer. Price the full length separately once the test looks right.
-4. **Generate** with the same params minus `get_cost`. Leave `use_unlim` unset; if the response returns `unlim_choice`, ask the user which balance to use and call again with their answer.
-5. **Plan blocks.** Seedance may be gated by plan. A block is reported before any charge. If blocked, say so and offer `kling3_0_turbo` as a cheaper fallback (price it first), noting that the prompt was written for Seedance and may be followed more loosely.
-6. **Never resubmit on a timeout.** The job may already be running. Use the returned job ID with `jobs_wait` or `show_generation_by_ids`.
-7. **References.** If the prompt uses `@Image`/`@Video`/`@Audio`, upload the media first (`media_upload`, or `media_import_url` for web links) and pass the returned IDs in `medias` with the roles the model declares (check with `models_explore` `action: "get"`). Never pass raw URLs in `medias`.
-
+2. **Default to a 5s test** for a new prompt, even if the final clip is longer. Price the full length separately once the test looks right.
+3. **Preflight the cost.** Call `balance`, then `generate_video` with `get_cost: true`, using `model: "seedance_2_5"`, the full prompt from the code block, and the `duration` and `aspect_ratio` from Settings. `get_cost` submits nothing and is allowed before approval.
+4. **Confirm** using the approval gate above, and stop until the user answers.
+5. **Generate** with exactly the approved params minus `get_cost`. Leave `use_unlim` unset; if the response returns `unlim_choice`, ask the user which balance to use and call again with their answer. If the response reports `adjustments` that changed a setting, tell the user what changed.
+6. **Plan blocks.** Seedance may be gated by plan. A block is reported before any charge. If blocked, say so and offer `kling3_0_turbo` as a cheaper fallback, noting that the prompt was written for Seedance and may be followed more loosely. Switching model is a change: price it and confirm again.
+7. **Never resubmit on a timeout.** The job may already be running. Use the returned job ID with `jobs_wait` or `show_generation_by_ids`.
+8. **References.** If the prompt uses `@Image`/`@Video`/`@Audio`, upload the media first (`media_upload`, or `media_import_url` for web links) and pass the returned IDs in `medias` with the roles the model declares (check with `models_explore` `action: "get"`). Never pass raw URLs in `medias`. Uploading is not generating, but list the uploaded media in the confirmation.
