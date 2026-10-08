@@ -9,11 +9,11 @@ Write Seedance 2.5 video prompts and generate them on Higgsfield, from inside Cl
 
 ## Setup
 
-1. Install the [Higgsfield CLI](https://higgsfield.ai) and log in: `higgsfield auth login`
+1. Install the [Higgsfield CLI](https://higgsfield.ai) and log in: `higgsfield auth login`. The auth helper needs `node` on PATH.
 2. Install the plugin: `/plugin install seedance-higgsfield@tamar-solu-plugins`
 3. Restart Claude Code (or `/reload-plugins`) and check `/mcp` shows `higgsfield` as connected.
 
-The MCP server authenticates with your CLI token via `scripts/higgsfield-headers.sh`. Higgsfield's own OAuth flow in `/mcp` currently fails with a `code_challenge` error, so the CLI login is the supported path. If the CLI is logged out, the helper sends no token and Claude Code falls back to OAuth.
+The MCP server authenticates with your CLI token via `scripts/higgsfield-headers.mjs` (a Node script, so it runs headless on macOS, Linux and Windows). Higgsfield's own OAuth flow in `/mcp` currently fails with a `code_challenge` error, so the CLI login is the supported path. If the CLI is logged out, the helper sends no token and Claude Code falls back to OAuth.
 
 ### Troubleshooting
 
@@ -29,7 +29,7 @@ The MCP server authenticates with your CLI token via `scripts/higgsfield-headers
 
 - Generations spend Higgsfield credits. The skill never writes and generates in the same turn, requires approval of the exact prompt and cost, and starts with a 5s test.
 - Seedance may be gated by plan. Higgsfield reports a block before charging, and the skill offers `kling3_0_turbo` as a cheaper fallback.
-- The headers helper finds the CLI even when it is not on Claude Code's PATH (nvm, npm-global, Homebrew), and falls back to reading `~/.config/higgsfield/credentials.json` if the token has not expired.
+- The headers helper finds the CLI even when it is not on Claude Code's PATH (nvm, npm-global, Homebrew, `%APPDATA%\npm` on Windows), and falls back to reading `~/.config/higgsfield/credentials.json` if the token has not expired.
 
 ## Maintaining
 

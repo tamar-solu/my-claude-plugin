@@ -87,7 +87,7 @@
       "name": "seedance-higgsfield",
       "source": "./plugins/seedance-higgsfield",
       "description": "Turn rough video ideas into structured Seedance 2.5 prompts, and generate them through the Higgsfield MCP server with cost checks.",
-      "version": "1.0.4",
+      "version": "1.0.5",
       "author": {
         "name": "Tamar",
         "github": "tamar-solu"
